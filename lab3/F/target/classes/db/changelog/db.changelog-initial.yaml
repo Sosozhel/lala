@@ -1,0 +1,248 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: your_name
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(50)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(100)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: datetime
+              - column:
+                  name: updated_at
+                  type: datetime
+
+  - changeSet:
+      id: 2
+      author: your_name
+      changes:
+        - createTable:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    unique: true
+                    nullable: false
+
+  - changeSet:
+      id: 3
+      author: your_name
+      changes:
+        - createTable:
+            tableName: authorities
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    unique: true
+                    nullable: false
+
+  - changeSet:
+      id: 4
+      author: your_name
+      changes:
+        - createTable:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_role_user
+                    references: users(id)
+              - column:
+                  name: role_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_role_role
+                    references: roles(id)
+            constraints:
+              primaryKey:
+                columnNames: user_id, role_id
+
+  - changeSet:
+      id: 5
+      author: your_name
+      changes:
+        - createTable:
+            tableName: role_authorities
+            columns:
+              - column:
+                  name: role_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_role_authority_role
+                    references: roles(id)
+              - column:
+                  name: authority_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_role_authority_authority
+                    references: authorities(id)
+            constraints:
+              primaryKey:
+                columnNames: role_id, authority_id
+
+  - changeSet:
+      id: 6
+      author: your_name
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: "USER"
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: "MODERATOR"
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: "ADMIN"
+
+  - changeSet:
+      id: 7
+      author: your_name
+      changes:
+        - insert:
+            tableName: authorities
+            columns:
+              - column:
+                  name: name
+                  value: "READ_JOKE"
+        - insert:
+            tableName: authorities
+            columns:
+              - column:
+                  name: name
+                  value: "CREATE_JOKE"
+        - insert:
+            tableName: authorities
+            columns:
+              - column:
+                  name: name
+                  value: "UPDATE_JOKE"
+        - insert:
+            tableName: authorities
+            columns:
+              - column:
+                  name: name
+                  value: "DELETE_JOKE"
+        - insert:
+            tableName: authorities
+            columns:
+              - column:
+                  name: name
+                  value: "MANAGE_USERS"
+        - insert:
+            tableName: authorities
+            columns:
+              - column:
+                  name: name
+                  value: "MANAGE_JOKES"
+
+  - changeSet:
+      id: 8
+      author: your_name
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO role_authorities (role_id, authority_id)
+              SELECT r.id, a.id FROM roles r, authorities a
+              WHERE r.name = 'USER' AND a.name = 'READ_JOKE';
+
+              INSERT INTO role_authorities (role_id, authority_id)
+              SELECT r.id, a.id FROM roles r, authorities a
+              WHERE r.name = 'USER' AND a.name = 'CREATE_JOKE';
+
+              INSERT INTO role_authorities (role_id, authority_id)
+              SELECT r.id, a.id FROM roles r, authorities a
+              WHERE r.name = 'MODERATOR' AND a.name = 'READ_JOKE';
+
+              INSERT INTO role_authorities (role_id, authority_id)
+              SELECT r.id, a.id FROM roles r, authorities a
+              WHERE r.name = 'MODERATOR' AND a.name = 'CREATE_JOKE';
+
+              INSERT INTO role_authorities (role_id, authority_id)
+              SELECT r.id, a.id FROM roles r, authorities a
+              WHERE r.name = 'MODERATOR' AND a.name = 'UPDATE_JOKE';
+
+              INSERT INTO role_authorities (role_id, authority_id)
+              SELECT r.id, a.id FROM roles r, authorities a
+              WHERE r.name = 'MODERATOR' AND a.name = 'DELETE_JOKE';
+
+              INSERT INTO role_authorities (role_id, authority_id)
+              SELECT r.id, a.id FROM roles r, authorities a
+              WHERE r.name = 'ADMIN' AND a.name = 'READ_JOKE';
+
+              INSERT INTO role_authorities (role_id, authority_id)
+              SELECT r.id, a.id FROM roles r, authorities a
+              WHERE r.name = 'ADMIN' AND a.name = 'CREATE_JOKE';
+
+              INSERT INTO role_authorities (role_id, authority_id)
+              SELECT r.id, a.id FROM roles r, authorities a
+              WHERE r.name = 'ADMIN' AND a.name = 'UPDATE_JOKE';
+
+              INSERT INTO role_authorities (role_id, authority_id)
+              SELECT r.id, a.id FROM roles r, authorities a
+              WHERE r.name = 'ADMIN' AND a.name = 'DELETE_JOKE';
+
+              INSERT INTO role_authorities (role_id, authority_id)
+              SELECT r.id, a.id FROM roles r, authorities a
+              WHERE r.name = 'ADMIN' AND a.name = 'MANAGE_USERS';
+
+              INSERT INTO role_authorities (role_id, authority_id)
+              SELECT r.id, a.id FROM roles r, authorities a
+              WHERE r.name = 'ADMIN' AND a.name = 'MANAGE_JOKES';
